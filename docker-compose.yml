@@ -1,0 +1,36 @@
+version: '3'
+services:
+    parser:
+        build: 'parser'
+        ports:
+            - "4000:4000"
+        privileged: true
+        networks:
+            - graphite-network
+        depends_on:
+            - grafana
+            - graphite
+    grafana:
+        image: grafana/grafana
+        ports:
+            - "3000:3000"
+        links:
+            - graphite
+        networks:
+            - graphite-network
+    graphite:
+        image: graphiteapp/docker-graphite-statsd
+        ports:
+            - "8089:80"
+            - "2003:2003"
+            - "2004:2004"
+            - "2023:2023"
+            - "2024:2024"
+        networks:
+            - graphite-network
+        volumes:
+            - graphite-storage:/opt/graphite/storage
+networks:
+    graphite-network:
+volumes:
+    graphite-storage:
